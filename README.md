@@ -10,8 +10,9 @@ Custom C++ Project management standard, used for my own projects.
 
 ## Goals
 
-The goals of this project is to create a standard for C/C++ projects, by specifying :
+The goals of this project is to create a standard for C/C++ projects, by providing or specifying :
 - a universal file format for project configuration.
+- conversion tools to generate project files for the most popular C++ IDEs.
 - much more to add to this list...
 
 At its current state, the standard is not a "standard" at all. It is actually very platform-dependent and all the talk in this document is better interpreted as a big brain-storming discussion for this standard.
