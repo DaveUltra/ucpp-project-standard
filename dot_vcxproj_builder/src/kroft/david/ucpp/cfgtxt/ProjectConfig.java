@@ -20,6 +20,7 @@ public class ProjectConfig {
 	
 	private ProjectConfig() {
 		this.includePaths = new ArrayList<String>();
+		this.libraries = new ArrayList<String>();
 		this.debugLibraryPaths = new ArrayList<String>();
 		this.releaseLibraryPaths = new ArrayList<String>();
 	}
@@ -91,7 +92,7 @@ public class ProjectConfig {
 		return debugLibraryPaths;
 	}
 	
-	public List<String> getReleaseLibraryPath() {
+	public List<String> getReleaseLibraryPaths() {
 		return releaseLibraryPaths;
 	}
 }

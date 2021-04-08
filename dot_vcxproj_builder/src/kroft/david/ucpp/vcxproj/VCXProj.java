@@ -7,22 +7,22 @@ import java.util.UUID;
 
 import kroft.david.ucpp.FileParser;
 import kroft.david.ucpp.cfgtxt.ProjectConfig;
+import kroft.david.ucpp.cfgtxt.ProjectType;
 import kroft.david.xml.XMLElement;
 import kroft.david.xml.XMLWriter;
 
 public class VCXProj {
-
-	public static final int PROJTYPE_EXE = 0;
-	public static final int PROJTYPE_LIB = 1;
 	
 	public static final List<String> SUPPORTED_TOOLSETS = new ArrayList<String>();
 	
 	// Get the equivalent string used by VS for project type.
-	public static String projectTypeToString(int prjType)
-	{
-		if      (prjType == PROJTYPE_EXE) return "Application";
-		else if (prjType == PROJTYPE_LIB) return "StaticLibrary";
-		else                              return "INVALID PROJECT TYPE";
+	public static String projectTypeToString(ProjectType prjType) {
+		if (prjType == ProjectType.PROJTYPE_EXE)
+			return "Application";
+		else if (prjType == ProjectType.PROJTYPE_LIB)
+			return "StaticLibrary";
+		else
+			return "INVALID PROJECT TYPE";
 	}
 
 	public static void init()
@@ -44,11 +44,6 @@ public class VCXProj {
 			e.printStackTrace();
 			return;
 		}
-
-		List<String> libs             = new ArrayList<String>();
-		List<String> debug_libsPath   = new ArrayList<String>();
-		List<String> release_libsPath = new ArrayList<String>();
-		int projectType = -1;
 
 		XMLElement xml_project = new XMLElement("Project");
 		xml_project.addAttrib("DefaultTargets", "Build");
@@ -85,14 +80,14 @@ public class VCXProj {
 		XMLElement xml_propertyGroup_Debug32 = new XMLElement("PropertyGroup");
 		xml_propertyGroup_Debug32.addAttrib("Condition", "'$(Configuration)|$(Platform)'=='Debug|Win32'");
 		xml_propertyGroup_Debug32.addAttrib("Label", "Configuration");
-		xml_propertyGroup_Debug32.addChild(new XMLElement("ConfigurationType", projectTypeToString(projectType)));
+		xml_propertyGroup_Debug32.addChild(new XMLElement("ConfigurationType", projectTypeToString(cfg.getProjectType())));
 		xml_propertyGroup_Debug32.addChild(new XMLElement("UseDebugLibraries", "true"));
 		xml_propertyGroup_Debug32.addChild(new XMLElement("PlatformToolset", platformToolset));
 		xml_propertyGroup_Debug32.addChild(new XMLElement("CharacterSet", "MultiByte"));
 		XMLElement xml_propertyGroup_Release32 = new XMLElement("PropertyGroup");
 		xml_propertyGroup_Release32.addAttrib("Condition", "'$(Configuration)|$(Platform)'=='Release|Win32'");
 		xml_propertyGroup_Release32.addAttrib("Label", "Configuration");
-		xml_propertyGroup_Release32.addChild(new XMLElement("ConfigurationType", projectTypeToString(projectType)));
+		xml_propertyGroup_Release32.addChild(new XMLElement("ConfigurationType", projectTypeToString(cfg.getProjectType())));
 		xml_propertyGroup_Release32.addChild(new XMLElement("UseDebugLibraries", "false"));
 		xml_propertyGroup_Release32.addChild(new XMLElement("PlatformToolset", platformToolset));
 		xml_propertyGroup_Release32.addChild(new XMLElement("WholeProgramOptimization", "false"));
@@ -172,7 +167,7 @@ public class VCXProj {
 		{
 			// Debug library directories.
 			String debug_addlibdirs = "";
-			for (String s : debug_libsPath) {
+			for (String s : cfg.getDebugLibraryPaths()) {
 				debug_addlibdirs += "$(SolutionDir)" + s + ';';
 			}
 			
@@ -187,7 +182,7 @@ public class VCXProj {
 		{
 			// Release library directories.
 			String release_addlibdirs = "";
-			for (String s : release_libsPath) {
+			for (String s : cfg.getReleaseLibraryPaths()) {
 				release_addlibdirs += "$(SolutionDir)" + s + ';';
 			}
 			
@@ -199,7 +194,7 @@ public class VCXProj {
 		// Libraries.
 		{
 			String addlibs = "";
-			for (String s : libs) {
+			for (String s : cfg.getLibraries()) {
 				addlibs += s + ".lib;";
 			}
 			addlibs += "%(AdditionalDependencies)";
